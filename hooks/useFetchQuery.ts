@@ -12,17 +12,34 @@ type API = {
     name: string;
     url: string;
   }>;
+  "/pokemon/:id": {
+    id: number;
+    name: string;
+    url: string;
+    types: {
+      type: {
+        name: string;
+      };
+    }[];
+  };
 };
 
 type ItemOf<T> = T extends (infer I)[] ? I : never;
 
 export type APIResult<T extends keyof API> = ItemOf<API[T]["results"]>;
 
-export function useFetchQuery<T extends keyof API>(url: T) {
+export function useFetchQuery<T extends keyof API>(
+  url: T,
+  params?: Record<string, string | number>,
+) {
+  const localUrl = Object.entries(params ?? {}).reduce(
+    (acc, [key, value]) => acc.replace(":" + key, value.toString()),
+    url as string,
+  );
   return useQuery({
-    queryKey: [url],
+    queryKey: [localUrl],
     queryFn: () => {
-      return fetch("https://pokeapi.co/api/v2" + url, {
+      return fetch("https://pokeapi.co/api/v2" + localUrl, {
         headers: {
           Accept: "application/json",
         },

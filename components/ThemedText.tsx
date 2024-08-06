@@ -1,10 +1,11 @@
 import { Text, type TextProps, StyleSheet } from "react-native";
 
 import { useThemeColors } from "@/hooks/useThemeColors";
+import type { Colors } from "@/constants/Colors";
 
 export type ThemedTextProps = TextProps & {
-  color?: "medium" | "dark";
-  variant?: "body3" | "caption";
+  color?: keyof (typeof Colors)["light"]["gray"];
+  variant?: "body3" | "caption" | "headline" | "subtitle2";
 };
 
 export function ThemedText({
@@ -28,8 +29,18 @@ const styles = StyleSheet.create({
     fontSize: 10,
     lineHeight: 16,
   },
+  headline: {
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: "bold",
+  },
   caption: {
     fontSize: 8,
     lineHeight: 12,
+  },
+  subtitle2: {
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "bold",
   },
 });
