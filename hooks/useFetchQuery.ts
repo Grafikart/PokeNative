@@ -52,7 +52,8 @@ export function useFetchQuery<T extends keyof API>(
   );
   return useQuery({
     queryKey: [localUrl],
-    queryFn: () => {
+    queryFn: async () => {
+      await wait(1000);
       return fetch("https://pokeapi.co/api/v2" + localUrl, {
         headers: {
           Accept: "application/json",
@@ -61,3 +62,7 @@ export function useFetchQuery<T extends keyof API>(
     },
   });
 }
+
+const wait = (duration: number) => {
+  return new Promise((resolve) => setTimeout(resolve, duration));
+};

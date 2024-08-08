@@ -12,12 +12,10 @@ import React from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { RootView } from "@/components/layout/RootView";
-import { useBackgroundColor } from "@/components/layout/ColoredView";
 
 export default function HomeScreen() {
   const { data } = useFetchQuery("/pokemon");
   const colors = useThemeColors();
-  useBackgroundColor(colors.tint);
   if (!data) {
     return (
       <RootView>

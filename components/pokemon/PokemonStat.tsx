@@ -1,8 +1,7 @@
-import { StyleSheet, View, type ViewProps } from "react-native";
-import { useThemeColors } from "@/hooks/useThemeColors";
+import { StyleSheet, View } from "react-native";
 import { Row } from "@/components/layout/Row";
 import { ThemedText } from "@/components/ThemedText";
-import { ratioToPercent } from "@/functions/style";
+import { MotiView } from "moti";
 
 type Props = {
   name: string;
@@ -23,17 +22,22 @@ export function PokemonStat({ name, value, color }: Props) {
           {value.toString().padStart(3, "0")}
         </ThemedText>
         <View style={styles.bar}>
-          <View
-            style={[
-              styles.barInner,
-              { backgroundColor: color, width: ratioToPercent(value, 255) },
-            ]}
+          <MotiView
+            style={[styles.barInner, { backgroundColor: color }]}
+            animate={{
+              flex: value,
+            }}
+            transition={{
+              type: "timing",
+              duration: 1000,
+            }}
           />
           <View
             style={[
               styles.barInner,
               styles.barBackground,
               { backgroundColor: color },
+              { flex: 255 - value },
             ]}
           />
         </View>
@@ -66,19 +70,20 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   bar: {
-    position: "relative",
+    flexDirection: "row",
     height: 4,
     flex: 1,
     borderRadius: 20,
     overflow: "hidden",
   },
   barInner: {
-    position: "absolute",
+    flex: 1,
     top: 0,
     left: 0,
     height: "100%",
   },
   barBackground: {
+    flex: 1,
     width: "100%",
     opacity: 0.24,
   },

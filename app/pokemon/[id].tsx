@@ -3,14 +3,13 @@ import {
   Image,
   Pressable,
   StyleSheet,
-  Text,
   View,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useFetchQuery } from "@/hooks/useFetchQuery";
 import { ThemedText } from "@/components/ThemedText";
-import React, { type PropsWithChildren } from "react";
+import React, { type PropsWithChildren, useState } from "react";
 import {
   formatHeight,
   formatWeight,
@@ -18,16 +17,18 @@ import {
   getPokemonNumber,
 } from "@/functions/pokemon";
 import { RootView } from "@/components/layout/RootView";
-import { useBackgroundColor } from "@/components/layout/ColoredView";
 import { Card } from "@/components/Card";
 import { TypePill } from "@/components/pokemon/TypePill";
 import { PokemonSpec } from "@/components/pokemon/PokemonSpec";
 import { Row } from "@/components/layout/Row";
 import { PokemonStat } from "@/components/pokemon/PokemonStat";
+import { AnimatePresence, MotiView } from "moti";
+import { AppearFromBottom } from "@/components/animation/AppearFromBottom";
 
 export default function PokemonScreen() {
   const { id } = useLocalSearchParams();
   const colors = useThemeColors();
+  const [isImageLoaded, setImageLoaded] = useState(false);
 
   if (Array.isArray(id)) {
     return <View>Error</View>;
@@ -36,12 +37,40 @@ export default function PokemonScreen() {
   const { data: pokemon } = useFetchQuery("/pokemon/:id", { id: id });
   const { data: species } = useFetchQuery("/pokemon-species/:id", { id: id });
   const mainType = pokemon?.types?.[0]["type"]["name"];
-  const colorType = mainType ? (colors.type as any)[mainType] : undefined;
-
-  useBackgroundColor(colorType);
+  const colorType = mainType ? (colors.type as any)[mainType] : colors.tint;
+  const statsName = [
+    "hp",
+    "attack",
+    "defense",
+    "special-attack",
+    "special-defense",
+    "speed",
+  ];
+  const specs =
+    pokemon?.weight && pokemon?.moves && pokemon?.height
+      ? [
+          {
+            name: "Weight",
+            image: require("@/assets/images/weight.png"),
+            spec: formatWeight(pokemon.weight),
+          },
+          {
+            name: "Height",
+            image: require("@/assets/images/rule.png"),
+            spec: formatHeight(pokemon.height),
+          },
+          {
+            name: "Moves",
+            spec: pokemon?.moves
+              .slice(0, 2)
+              .map((m) => m.move.name)
+              .join("\n"),
+          },
+        ]
+      : [];
 
   return (
-    <RootView style={styles.container}>
+    <RootView style={styles.container} color={colorType}>
       <View style={styles.header}>
         <Pressable onPress={router.back}>
           <Image
@@ -75,17 +104,25 @@ export default function PokemonScreen() {
           height={208}
         />
         <Card style={styles.card}>
-          <View style={styles.imagePlaceholder}>
+          <MotiView
+            style={styles.imagePlaceholder}
+            animate={
+              isImageLoaded
+                ? { opacity: 1, translateY: 0 }
+                : { opacity: 0, translateY: 20 }
+            }
+          >
             {pokemon?.id ? (
               <Image
                 source={{ uri: getPokemonArtwork(id) }}
                 width={200}
                 height={200}
+                onLoad={() => setImageLoaded(true)}
               />
             ) : (
               <ActivityIndicator color={colors.tint} size="large" />
             )}
-          </View>
+          </MotiView>
           <View style={styles.stack}>
             {/* Types */}
             <View style={styles.pills}>
@@ -97,23 +134,32 @@ export default function PokemonScreen() {
             {/* Specs */}
             <TitleSection color={colorType}>About</TitleSection>
             <Row style={styles.specs} separator>
-              <PokemonSpec
-                spec={formatWeight(pokemon?.weight)}
-                name="Weight"
-                image={require("@/assets/images/weight.png")}
-              />
-              <PokemonSpec
-                spec={formatHeight(pokemon?.height)}
-                name="Height"
-                image={require("@/assets/images/rule.png")}
-              />
-              <PokemonSpec
-                name="Moves"
-                spec={pokemon?.moves
-                  .slice(0, 2)
-                  .map((m) => m.move.name)
-                  .join("\n")}
-              />
+              {specs.length === 0 ? (
+                <ActivityIndicator
+                  color={colors.tint}
+                  size="large"
+                  style={{ alignSelf: "center" }}
+                />
+              ) : (
+                <AnimatePresence>
+                  {specs.map((spec, k) => (
+                    <AppearFromBottom
+                      style={
+                        k > 0
+                          ? {
+                              borderLeftColor: colors.gray.light,
+                              borderLeftWidth: 1,
+                            }
+                          : undefined
+                      }
+                      key={spec.name}
+                      index={k}
+                    >
+                      <PokemonSpec {...spec} />
+                    </AppearFromBottom>
+                  ))}
+                </AnimatePresence>
+              )}
             </Row>
             <View style={styles.bio}>
               <ThemedText variant="body3">
@@ -125,13 +171,23 @@ export default function PokemonScreen() {
             </View>
             <TitleSection color={colorType}>Base stats</TitleSection>
             <View style={styles.stats}>
-              {pokemon?.stats.map((stat) => (
-                <PokemonStat
-                  name={stat.stat.name}
-                  value={stat.base_stat}
-                  color={colorType}
-                />
-              ))}
+              {pokemon
+                ? pokemon?.stats.map((stat) => (
+                    <PokemonStat
+                      key={stat.stat.name}
+                      name={stat.stat.name}
+                      value={stat.base_stat}
+                      color={colorType}
+                    />
+                  ))
+                : statsName.map((name) => (
+                    <PokemonStat
+                      key={name}
+                      name={name}
+                      value={0}
+                      color={colorType}
+                    />
+                  ))}
             </View>
           </View>
         </Card>
@@ -202,12 +258,14 @@ const styles = StyleSheet.create({
   },
   pills: {
     flex: 0,
+    height: 20,
     flexDirection: "row",
     justifyContent: "center",
     gap: 16,
   },
   specs: {
     alignSelf: "stretch",
+    height: 48,
   },
   stack: {
     flex: 0,

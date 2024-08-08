@@ -5,7 +5,7 @@ import {
   View,
   type ViewProps,
 } from "react-native";
-import React, { type PropsWithChildren } from "react";
+import React from "react";
 import { ThemedText } from "@/components/ThemedText";
 
 type Props = ViewProps & {
