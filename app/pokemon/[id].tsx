@@ -46,6 +46,9 @@ export default function PokemonScreen() {
     "special-defense",
     "speed",
   ];
+  const bio = species?.flavor_text_entries
+    ?.find(({ language }) => language.name === "en")
+    ?.flavor_text.replaceAll("\n", " ");
   const specs =
     pokemon?.weight && pokemon?.moves && pokemon?.height
       ? [
@@ -162,12 +165,7 @@ export default function PokemonScreen() {
               )}
             </Row>
             <View style={styles.bio}>
-              <ThemedText variant="body3">
-                {species?.flavor_text_entries?.[0].flavor_text.replaceAll(
-                  "\n",
-                  " ",
-                )}
-              </ThemedText>
+              <ThemedText variant="body3">{bio}</ThemedText>
             </View>
             <TitleSection color={colorType}>Base stats</TitleSection>
             <View style={styles.stats}>
