@@ -5,7 +5,13 @@ import type { Colors } from "@/constants/Colors";
 
 export type ThemedTextProps = TextProps & {
   color?: keyof (typeof Colors)["light"]["gray"];
-  variant?: "body3" | "caption" | "headline" | "subtitle2";
+  variant?:
+    | "body3"
+    | "caption"
+    | "headline"
+    | "subtitle1"
+    | "subtitle2"
+    | "subtitle3";
 };
 
 export function ThemedText({
@@ -38,8 +44,18 @@ const styles = StyleSheet.create({
     fontSize: 8,
     lineHeight: 12,
   },
+  subtitle1: {
+    fontSize: 14,
+    lineHeight: 16,
+    fontWeight: "bold",
+  },
   subtitle2: {
     fontSize: 12,
+    lineHeight: 16,
+    fontWeight: "bold",
+  },
+  subtitle3: {
+    fontSize: 10,
     lineHeight: 16,
     fontWeight: "bold",
   },

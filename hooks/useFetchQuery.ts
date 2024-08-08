@@ -12,16 +12,30 @@ type API = {
     name: string;
     url: string;
   }>;
+  "/pokemon-species/:id": {
+    flavor_text_entries: {
+      flavor_text: string;
+    }[];
+  };
   "/pokemon/:id": {
     id: number;
     name: string;
     url: string;
-    types: {
-      type: {
+    weight: number;
+    height: number;
+    moves: { move: { name: string } }[];
+    stats: {
+      base_stat: number;
+      stat: {
         name: string;
       };
     }[];
   };
+  types: {
+    type: {
+      name: string;
+    };
+  }[];
 };
 
 type ItemOf<T> = T extends (infer I)[] ? I : never;

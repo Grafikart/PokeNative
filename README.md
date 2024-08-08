@@ -1,50 +1,31 @@
-# Welcome to your Expo app 👋
+# React Native
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+- View attention au flex !
+- Un text doit être dans un Text
+- Reanimate & Moti pour les animations
+- Stack de base
+```tsx
+<Stack
+        screenOptions={{
+           animation: "slide_from_right",
+           animationDuration: 1000,
+           contentStyle: {
+              backgroundColor: "transparent",
+           },
+           headerShown: false,
+        }}
+>
+   <Stack.Screen name="index" />
+   <Stack.Screen name="pokemon/[id]" />
+</Stack>
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## TODO : 
 
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Pagination infinie sur la home
+- Recherche
+- Organisation (nom ou id)
+- Press sur l'image déclenche le cri du pokemon
+- Tester une connexion lente pour la page d'un pokemon
+- Bouton pokemon suivant / pokemon précédent sur la single
+- *Slide pour passer au pokemon suivant / précédent

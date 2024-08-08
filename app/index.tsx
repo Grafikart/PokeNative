@@ -7,30 +7,33 @@ import {
 } from "react-native";
 import { useFetchQuery } from "@/hooks/useFetchQuery";
 import { useThemeColors } from "@/hooks/useThemeColors";
-import { PokemonCard } from "@/components/PokemonCard";
+import { PokemonCard } from "@/components/pokemon/PokemonCard";
 import React from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { RootView } from "@/components/layout/RootView";
+import { useBackgroundColor } from "@/components/layout/ColoredView";
 
 export default function HomeScreen() {
   const { data } = useFetchQuery("/pokemon");
   const colors = useThemeColors();
+  useBackgroundColor(colors.tint);
   if (!data) {
     return (
-      <View style={styles.container}>
+      <RootView>
         <ActivityIndicator size="large" color={colors.tint} />
-      </View>
+      </RootView>
     );
   }
 
   const pokemons = data.results;
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.tint }]}>
+    <RootView>
       <View style={styles.header}>
         <Image
           source={require("@/assets/images/pokeball.png")}
-          style={styles.pokeball}
+          width={24}
+          height={24}
         />
         <ThemedText variant="headline" color="white">
           Pokédex
@@ -46,16 +49,11 @@ export default function HomeScreen() {
           keyExtractor={(pokemon) => pokemon.url}
         />
       </Card>
-    </SafeAreaView>
+    </RootView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 4,
-    paddingTop: 4,
-  },
   header: {
     margin: 12,
     marginTop: 0,
@@ -76,5 +74,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     padding: 12,
   },
-  pokeball: {},
 });

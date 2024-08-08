@@ -1,35 +1,27 @@
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { View } from "react-native";
+import { ColoredView } from "@/components/layout/ColoredView";
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
-      <View
-        style={{
-          padding: 10,
-          backgroundColor: "blue",
-          flex: 1,
-          alignItems: "stretch",
-        }}
-      >
+      <ColoredView>
         <Stack
           screenOptions={{
-            headerStyle: {
-              backgroundColor: "#f4511e",
+            animation: "slide_from_right",
+            animationDuration: 1000,
+            contentStyle: {
+              backgroundColor: "transparent",
             },
-            headerTintColor: "#fff",
-            headerTitleStyle: {
-              fontWeight: "bold",
-            },
+            headerShown: false,
           }}
         >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="pokemon/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="index" />
+          <Stack.Screen name="pokemon/[id]" />
         </Stack>
-      </View>
+      </ColoredView>
     </QueryClientProvider>
   );
 }

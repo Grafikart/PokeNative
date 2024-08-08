@@ -35,7 +35,7 @@ export const Colors = {
       rock: "#B69E31",
       steel: "#B7B9D0",
       water: "#6493EB",
-    },
+    } as Record<string, string>,
   },
   dark: {},
 };

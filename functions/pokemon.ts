@@ -12,3 +12,17 @@ export function getPokemonId(url: string) {
 export function getPokemonNumber(id: string | number) {
   return `#${id.toString().padStart(3, "0")}`;
 }
+
+export function formatWeight(weight?: number): string {
+  if (weight === undefined) {
+    return "";
+  }
+  return (weight / 10).toString().replace(".", ",") + " kg";
+}
+
+export function formatHeight(weight?: number): string {
+  if (weight === undefined) {
+    return "";
+  }
+  return (weight / 10).toString().replace(".", ",") + " m";
+}
