@@ -1,5 +1,12 @@
 # React Native
 
+L'objectif de ce dépôt est de préparer un tutoriel sur React Native en créant une application "pokedex" en utilisant React Native
+
+- [Maquette](https://www.figma.com/community/file/979132880663340794)
+- [API](https://pokeapi.co/docs/v2)
+
+## Découverte
+
 - View attention au flex !
 - Un text doit être dans un Text
 - Reanimate & Moti pour les animations
@@ -20,7 +27,7 @@
 </Stack>
 ```
 
-## TODO : 
+## TODO
 
 - Pagination infinie sur la home
 - Recherche
