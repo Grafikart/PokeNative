@@ -1,5 +1,6 @@
 import { StyleSheet, View, type ViewProps } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { Shadows } from "@/constants/Shadow";
 
 type Props = ViewProps & {
   elevation?: number;
@@ -18,11 +19,7 @@ export function Card({ elevation = 2, style, ...rest }: Props) {
 const styles = StyleSheet.create({
   card: {
     alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { height: 1, width: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 2,
-    elevation: 2,
     borderRadius: 8,
+    ...Shadows.dp2,
   },
 });

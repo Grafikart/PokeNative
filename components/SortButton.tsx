@@ -37,10 +37,10 @@ export function SortButton({ sortKey, onChange }: Props) {
     right: number;
   }>(null);
   const onOpen = () => {
-    buttonRef.current?.measure((x, y, width, height, pageX, pageY) => {
+    buttonRef.current?.measureInWindow((x, y, width, height) => {
       setPosition({
-        top: pageY,
-        right: Dimensions.get("window").width - pageX - width,
+        top: y + height,
+        right: Dimensions.get("window").width - x - width,
       });
     });
     setShowPopup(true);
@@ -70,7 +70,6 @@ export function SortButton({ sortKey, onChange }: Props) {
         onDismiss={onClose}
         visible={isPopupVisible}
         animationType="fade"
-        presentationStyle="fullScreen"
       >
         <Pressable style={styles.backdrop} onPress={onClose}></Pressable>
         <View
