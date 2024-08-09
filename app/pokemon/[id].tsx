@@ -25,6 +25,7 @@ import { PokemonStat } from "@/components/pokemon/PokemonStat";
 import { AnimatePresence, MotiView } from "moti";
 import { AppearFromBottom } from "@/components/animation/AppearFromBottom";
 import { Audio } from "expo-av";
+import { FadingImage } from "@/components/FadingImage";
 
 export default function PokemonScreen() {
   const { id } = useLocalSearchParams();
@@ -123,20 +124,7 @@ export default function PokemonScreen() {
         />
         <Card style={styles.card}>
           <Pressable onPress={onCry} style={styles.imagePlaceholder}>
-            <MotiView
-              animate={
-                isImageLoaded
-                  ? { opacity: 1, translateY: 0 }
-                  : { opacity: 0, translateY: 20 }
-              }
-            >
-              <Image
-                source={{ uri: getPokemonArtwork(id) }}
-                width={200}
-                height={200}
-                onLoad={() => setImageLoaded(true)}
-              />
-            </MotiView>
+            <FadingImage url={getPokemonArtwork(id)} width={200} height={200} />
           </Pressable>
           <View style={styles.stack}>
             {/* Types */}
