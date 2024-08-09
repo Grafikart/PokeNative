@@ -8,8 +8,6 @@ export default function RootLayout() {
     <QueryClientProvider client={queryClient}>
       <Stack
         screenOptions={{
-          animation: "slide_from_right",
-          animationDuration: 1000,
           contentStyle: {
             backgroundColor: "transparent",
           },

@@ -7,11 +7,11 @@ import { Card } from "@/components/Card";
 import { Link } from "expo-router";
 
 type Props = {
-  pokemon: APIResult<"/pokemon">;
+  id: string;
+  name: string;
 };
 
-export function PokemonCard({ pokemon }: Props) {
-  const id = getPokemonId(pokemon.url);
+export function PokemonCard({ id, name }: Props) {
   return (
     <Link href={{ pathname: "/pokemon/[id]", params: { id: id } }} asChild>
       <Pressable style={{ flex: 1 / 3 }}>
@@ -20,11 +20,11 @@ export function PokemonCard({ pokemon }: Props) {
             #{id.padStart(3, "0")}
           </ThemedText>
           <Image
-            source={{ uri: getPokemonArtwork(pokemon.url) }}
+            source={{ uri: getPokemonArtwork(id) }}
             width={72}
             height={72}
           />
-          <ThemedText variant="body3">{pokemon.name}</ThemedText>
+          <ThemedText variant="body3">{name}</ThemedText>
         </Card>
       </Pressable>
     </Link>

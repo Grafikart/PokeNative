@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 
 type PaginatedResults<T> = {
   count: number;
@@ -8,7 +8,7 @@ type PaginatedResults<T> = {
 };
 
 type API = {
-  "/pokemon": PaginatedResults<{
+  "/pokemon?limit=21": PaginatedResults<{
     name: string;
     url: string;
   }>;
@@ -66,6 +66,33 @@ export function useFetchQuery<T extends keyof API>(
   });
 }
 
+export function useInfiniteFetchQuery<T extends keyof API>(
+  url: T,
+  params?: Record<string, string | number>,
+) {
+  const localUrl = Object.entries(params ?? {}).reduce(
+    (acc, [key, value]) => acc.replace(":" + key, value.toString()),
+    url as string,
+  );
+  return useInfiniteQuery({
+    queryKey: [localUrl],
+    initialPageParam: "https://pokeapi.co/api/v2" + localUrl,
+    queryFn: async ({ pageParam }) => {
+      await wait(1000);
+      return fetch(pageParam, {
+        headers: {
+          Accept: "application/json",
+        },
+      }).then((r) => r.json()) as Promise<API[T]>;
+    },
+    getNextPageParam: (lastPage) => {
+      if (!("next" in lastPage)) {
+        throw new Error("Unpaginated result");
+      }
+      return lastPage.next;
+    },
+  });
+}
 const wait = (duration: number) => {
   return new Promise((resolve) => setTimeout(resolve, duration));
 };

@@ -5,16 +5,23 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { useFetchQuery } from "@/hooks/useFetchQuery";
+import { useInfiniteFetchQuery } from "@/hooks/useFetchQuery";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { PokemonCard } from "@/components/pokemon/PokemonCard";
-import React from "react";
+import React, { useState } from "react";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { RootView } from "@/components/layout/RootView";
+import { getPokemonId } from "@/functions/pokemon";
+import { SearchBar } from "@/components/SearchBar";
+import { Row } from "@/components/layout/Row";
+import { SortButton } from "@/components/SortButton";
 
 export default function HomeScreen() {
-  const { data } = useFetchQuery("/pokemon");
+  const [sortKey, setSortKey] = useState<"id" | "name">("id");
+  const [search, setSearch] = useState("");
+  const { data, fetchNextPage, isFetching } =
+    useInfiniteFetchQuery("/pokemon?limit=21");
   const colors = useThemeColors();
   if (!data) {
     return (
@@ -24,7 +31,23 @@ export default function HomeScreen() {
     );
   }
 
-  const pokemons = data.results;
+  const pokemons = data.pages.flatMap((page) =>
+    page.results.map((r) => ({ ...r, id: getPokemonId(r.url) })),
+  );
+  const filteredPokemons = [
+    ...(search
+      ? pokemons.filter(
+          (pokemon) =>
+            pokemon.name.toLowerCase().includes(search.toLowerCase()) ||
+            pokemon.id.includes(search),
+        )
+      : pokemons),
+  ].sort((a, b) => (a[sortKey] < b[sortKey] ? -1 : 1));
+
+  const onEnd = () => {
+    fetchNextPage();
+  };
+
   return (
     <RootView>
       <View style={styles.header}>
@@ -37,14 +60,24 @@ export default function HomeScreen() {
           Pokédex
         </ThemedText>
       </View>
+      <Row style={styles.searchBar}>
+        <SearchBar search={search} onChange={setSearch} />
+        <SortButton sortKey={sortKey} onChange={setSortKey} />
+      </Row>
       <Card style={styles.wrapper}>
         <FlatList
-          data={pokemons}
+          data={filteredPokemons}
           numColumns={3}
           contentContainerStyle={[styles.list, styles.gap]}
           columnWrapperStyle={styles.gap}
-          renderItem={({ item: pokemon }) => <PokemonCard pokemon={pokemon} />}
-          keyExtractor={(pokemon) => pokemon.url}
+          onEndReached={search ? undefined : onEnd}
+          renderItem={({ item: pokemon }) => (
+            <PokemonCard id={pokemon.id} name={pokemon.name} />
+          )}
+          ListFooterComponent={
+            isFetching ? <ActivityIndicator color={colors.tint} /> : null
+          }
+          keyExtractor={(pokemon) => pokemon.id}
         />
       </Card>
     </RootView>
@@ -71,5 +104,9 @@ const styles = StyleSheet.create({
   list: {
     backgroundColor: "#FFF",
     padding: 12,
+  },
+  searchBar: {
+    gap: 16,
+    marginBottom: 24,
   },
 });

@@ -4,10 +4,16 @@ import { Colors } from "@/constants/Colors";
 
 type Props = ViewProps & {
   separator?: boolean;
+  gap?: number;
 };
 
-export function Row({ style, separator, ...rest }: Props) {
-  return <View style={[styles.row, style]} {...rest} />;
+export function Row({ style, separator, gap, ...rest }: Props) {
+  return (
+    <View
+      style={[styles.row, style, gap ? { gap: gap } : undefined]}
+      {...rest}
+    />
+  );
 }
 
 const styles = StyleSheet.create({

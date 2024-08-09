@@ -11,6 +11,7 @@ L'objectif de ce dépôt est de préparer un tutoriel sur React Native en créan
 - Un text doit être dans un Text
 - Reanimate & Moti pour les animations
 - Stack de base
+
 ```tsx
 <Stack
         screenOptions={{
@@ -29,10 +30,5 @@ L'objectif de ce dépôt est de préparer un tutoriel sur React Native en créan
 
 ## TODO
 
-- Pagination infinie sur la home
-- Recherche
-- Organisation (nom ou id)
-- Press sur l'image déclenche le cri du pokemon
-- Tester une connexion lente pour la page d'un pokemon
 - Bouton pokemon suivant / pokemon précédent sur la single
 - *Slide pour passer au pokemon suivant / précédent
