@@ -58,7 +58,11 @@ export function SortButton({ sortKey, onChange }: Props) {
           style={[styles.button, { backgroundColor: colors.gray.white }]}
         >
           <Image
-            source={require("@/assets/images/tag.png")}
+            source={
+              sortKey === "id"
+                ? require("@/assets/images/tag.png")
+                : require("@/assets/images/text_format.png")
+            }
             width={16}
             height={16}
           />
@@ -67,7 +71,7 @@ export function SortButton({ sortKey, onChange }: Props) {
 
       <Modal
         transparent
-        onDismiss={onClose}
+        onRequestClose={onClose}
         visible={isPopupVisible}
         animationType="fade"
       >

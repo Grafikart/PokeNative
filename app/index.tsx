@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
   },
   searchBar: {
     gap: 16,
+    marginHorizontal: 12,
     marginBottom: 24,
   },
 });
