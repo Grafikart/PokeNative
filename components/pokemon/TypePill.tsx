@@ -13,7 +13,11 @@ export function TypePill({ name, style, ...rest }: Props) {
       style={[style, styles.pill, { backgroundColor: colors.type[name] }]}
       {...rest}
     >
-      <ThemedText color="white" variant="subtitle3">
+      <ThemedText
+        color="white"
+        variant="subtitle3"
+        style={{ textTransform: "capitalize" }}
+      >
         {name}
       </ThemedText>
     </View>

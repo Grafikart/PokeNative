@@ -3,13 +3,14 @@ import {
   Image,
   Pressable,
   StyleSheet,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useFetchQuery } from "@/hooks/useFetchQuery";
 import { ThemedText } from "@/components/ThemedText";
-import React, { type PropsWithChildren, useState } from "react";
+import React, { memo, type PropsWithChildren, useMemo, useState } from "react";
 import {
   formatHeight,
   formatWeight,
@@ -22,15 +23,77 @@ import { TypePill } from "@/components/pokemon/TypePill";
 import { PokemonSpec } from "@/components/pokemon/PokemonSpec";
 import { Row } from "@/components/layout/Row";
 import { PokemonStat } from "@/components/pokemon/PokemonStat";
-import { AnimatePresence, MotiView } from "moti";
+import { AnimatePresence } from "moti";
 import { AppearFromBottom } from "@/components/animation/AppearFromBottom";
 import { Audio } from "expo-av";
 import { FadingImage } from "@/components/FadingImage";
+import { type Route, TabView } from "react-native-tab-view";
+
+type PokemonRoute = Route & {
+  id: number;
+  onNext: () => void;
+  onPrevious: () => void;
+};
+
+const renderScene = ({ route }: { route: PokemonRoute }) => {
+  return (
+    <PokemonView
+      id={route.id}
+      onPrevious={route.onPrevious}
+      onNext={route.onNext}
+    />
+  );
+};
+
+const lastPokemon = 151;
+const firstPokemon = 1;
 
 export default function PokemonScreen() {
-  const { id } = useLocalSearchParams();
+  const [id, setId] = useState(
+    parseInt((useLocalSearchParams() as { id: string }).id, 10),
+  );
+
+  const routeFor = (id: number) => {
+    return {
+      key: id.toString(),
+      id: id,
+      title: id.toString(),
+      onNext: () => setIndex((i) => i + 1),
+      onPrevious: () => setIndex((i) => i - 1),
+    } satisfies PokemonRoute;
+  };
+  const layout = useWindowDimensions();
+  const [index, setIndex] = useState(1);
+  const routes = useMemo(
+    () => [routeFor(id - 1), routeFor(id), routeFor(id + 1)],
+    [id],
+  );
+  const onAnimationEnd = () => {
+    if (
+      index === 1 ||
+      (index === 0 && id === firstPokemon + 1) ||
+      (index === 2 && id === lastPokemon - 1)
+    ) {
+      return;
+    }
+    setId(id + (index - 1));
+  };
+  return (
+    <TabView<PokemonRoute>
+      renderTabBar={() => null}
+      onIndexChange={setIndex}
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      initialLayout={{ width: layout.width }}
+      onSwipeEnd={onAnimationEnd}
+    />
+  );
+}
+
+type Props = { id: number; onPrevious: () => void; onNext: () => void };
+
+const PokemonView = memo(function ({ id, onPrevious, onNext }: Props) {
   const colors = useThemeColors();
-  const [isImageLoaded, setImageLoaded] = useState(false);
 
   if (Array.isArray(id)) {
     return <View>Error</View>;
@@ -90,6 +153,7 @@ export default function PokemonScreen() {
 
   return (
     <RootView style={styles.container} color={colorType}>
+      {/* Header */}
       <View style={styles.header}>
         <Pressable onPress={router.back}>
           <Image
@@ -123,9 +187,39 @@ export default function PokemonScreen() {
           height={208}
         />
         <Card style={styles.card}>
-          <Pressable onPress={onCry} style={styles.imagePlaceholder}>
-            <FadingImage url={getPokemonArtwork(id)} width={200} height={200} />
-          </Pressable>
+          {/* Pokemon image and nav */}
+          <Row style={styles.imageRow}>
+            {id > firstPokemon ? (
+              <Pressable onPress={onPrevious}>
+                <Image
+                  source={require("@/assets/images/chevron_left.png")}
+                  width={24}
+                  height={24}
+                />
+              </Pressable>
+            ) : (
+              <View style={{ width: 24 }}></View>
+            )}
+            <Pressable onPress={onCry} style={styles.image}>
+              <FadingImage
+                url={getPokemonArtwork(id)}
+                width={200}
+                height={200}
+              />
+            </Pressable>
+            {id < lastPokemon ? (
+              <Pressable onPress={onNext}>
+                <Image
+                  source={require("@/assets/images/chevron_right.png")}
+                  width={24}
+                  height={24}
+                />
+              </Pressable>
+            ) : (
+              <View style={{ width: 24 }}></View>
+            )}
+          </Row>
+
           <View style={styles.stack}>
             {/* Types */}
             <View style={styles.pills}>
@@ -192,7 +286,7 @@ export default function PokemonScreen() {
       </View>
     </RootView>
   );
-}
+});
 
 function TitleSection({
   color,
@@ -246,11 +340,15 @@ const styles = StyleSheet.create({
     zIndex: 2,
     alignItems: "stretch",
   },
-  imagePlaceholder: {
+  imageRow: {
     position: "absolute",
     top: -140,
-    width: 200,
-    height: 200,
+    left: 0,
+    right: 0,
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+  },
+  image: {
     justifyContent: "center",
     alignSelf: "center",
   },

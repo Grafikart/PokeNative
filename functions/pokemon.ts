@@ -1,4 +1,4 @@
-export function getPokemonArtwork(url: string) {
+export function getPokemonArtwork(url: string | number) {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getPokemonId(url)}.png`;
 }
 

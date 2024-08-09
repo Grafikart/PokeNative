@@ -61,7 +61,7 @@ export function useFetchQuery<T extends keyof API>(
   return useQuery({
     queryKey: [localUrl],
     queryFn: async () => {
-      await wait(1000);
+      // await wait(1000);
       return fetch("https://pokeapi.co/api/v2" + localUrl, {
         headers: {
           Accept: "application/json",
