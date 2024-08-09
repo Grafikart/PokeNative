@@ -5,6 +5,7 @@ import { getPokemonArtwork, getPokemonId } from "@/functions/pokemon";
 import { ThemedText } from "@/components/ThemedText";
 import { Card } from "@/components/Card";
 import { Link } from "expo-router";
+import { Colors } from "@/constants/Colors";
 
 type Props = {
   id: string;
@@ -25,6 +26,7 @@ export function PokemonCard({ id, name }: Props) {
             height={72}
           />
           <ThemedText variant="body3">{name}</ThemedText>
+          <View style={styles.shadow} />
         </Card>
       </Pressable>
     </Link>
@@ -33,10 +35,22 @@ export function PokemonCard({ id, name }: Props) {
 
 const styles = StyleSheet.create({
   card: {
+    position: "relative",
     paddingVertical: 4,
     paddingHorizontal: 8,
   },
   id: {
     alignSelf: "flex-end",
+  },
+  shadow: {
+    flex: 1,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    borderRadius: 7,
+    height: 44,
+    zIndex: -1,
+    backgroundColor: Colors.light.gray.background,
   },
 });
