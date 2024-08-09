@@ -17,7 +17,7 @@ export function PokemonCard({ id, name }: Props) {
       <Pressable style={{ flex: 1 / 3 }}>
         <Card style={styles.card}>
           <ThemedText color="medium" variant="caption" style={styles.id}>
-            #{id.padStart(3, "0")}
+            #{id.toString().padStart(3, "0")}
           </ThemedText>
           <Image
             source={{ uri: getPokemonArtwork(id) }}

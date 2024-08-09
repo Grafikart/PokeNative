@@ -24,6 +24,7 @@ import { Row } from "@/components/layout/Row";
 import { PokemonStat } from "@/components/pokemon/PokemonStat";
 import { AnimatePresence, MotiView } from "moti";
 import { AppearFromBottom } from "@/components/animation/AppearFromBottom";
+import { Audio } from "expo-av";
 
 export default function PokemonScreen() {
   const { id } = useLocalSearchParams();
@@ -72,6 +73,20 @@ export default function PokemonScreen() {
         ]
       : [];
 
+  const onCry = async () => {
+    const cry = pokemon?.cries.latest;
+    if (!cry) {
+      return;
+    }
+    const { sound } = await Audio.Sound.createAsync(
+      {
+        uri: pokemon?.cries.latest,
+      },
+      { shouldPlay: true },
+    );
+    sound.playAsync();
+  };
+
   return (
     <RootView style={styles.container} color={colorType}>
       <View style={styles.header}>
@@ -107,25 +122,22 @@ export default function PokemonScreen() {
           height={208}
         />
         <Card style={styles.card}>
-          <MotiView
-            style={styles.imagePlaceholder}
-            animate={
-              isImageLoaded
-                ? { opacity: 1, translateY: 0 }
-                : { opacity: 0, translateY: 20 }
-            }
-          >
-            {pokemon?.id ? (
+          <Pressable onPress={onCry} style={styles.imagePlaceholder}>
+            <MotiView
+              animate={
+                isImageLoaded
+                  ? { opacity: 1, translateY: 0 }
+                  : { opacity: 0, translateY: 20 }
+              }
+            >
               <Image
                 source={{ uri: getPokemonArtwork(id) }}
                 width={200}
                 height={200}
                 onLoad={() => setImageLoaded(true)}
               />
-            ) : (
-              <ActivityIndicator color={colors.tint} size="large" />
-            )}
-          </MotiView>
+            </MotiView>
+          </Pressable>
           <View style={styles.stack}>
             {/* Types */}
             <View style={styles.pills}>

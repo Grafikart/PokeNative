@@ -33,17 +33,22 @@ type API = {
         name: string;
       };
     }[];
-  };
-  types: {
-    type: {
-      name: string;
+    cries: {
+      latest: string;
     };
-  }[];
+    types: {
+      type: {
+        name: string;
+      };
+    }[];
+  };
 };
 
 type ItemOf<T> = T extends (infer I)[] ? I : never;
 
-export type APIResult<T extends keyof API> = ItemOf<API[T]["results"]>;
+export type APIResult<T extends keyof API> = API[T] extends { results: infer R }
+  ? ItemOf<R>
+  : never;
 
 export function useFetchQuery<T extends keyof API>(
   url: T,

@@ -2,11 +2,14 @@ export function getPokemonArtwork(url: string) {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${getPokemonId(url)}.png`;
 }
 
-export function getPokemonId(url: string) {
-  if (!url.includes("/")) {
+export function getPokemonId(url: string | number): number {
+  if (typeof url === "number") {
     return url;
   }
-  return url.split("/").at(-2)!;
+  if (!url.includes("/")) {
+    return parseInt(url, 10);
+  }
+  return parseInt(url.split("/").at(-2)!, 10);
 }
 
 export function getPokemonNumber(id: string | number) {

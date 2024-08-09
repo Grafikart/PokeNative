@@ -39,7 +39,7 @@ export default function HomeScreen() {
       ? pokemons.filter(
           (pokemon) =>
             pokemon.name.toLowerCase().includes(search.toLowerCase()) ||
-            pokemon.id.includes(search),
+            pokemon.id.toString() === search,
         )
       : pokemons),
   ].sort((a, b) => (a[sortKey] < b[sortKey] ? -1 : 1));
@@ -72,12 +72,12 @@ export default function HomeScreen() {
           columnWrapperStyle={styles.gap}
           onEndReached={search ? undefined : onEnd}
           renderItem={({ item: pokemon }) => (
-            <PokemonCard id={pokemon.id} name={pokemon.name} />
+            <PokemonCard id={pokemon.id.toString()} name={pokemon.name} />
           )}
           ListFooterComponent={
             isFetching ? <ActivityIndicator color={colors.tint} /> : null
           }
-          keyExtractor={(pokemon) => pokemon.id}
+          keyExtractor={(pokemon) => pokemon.id.toString()}
         />
       </Card>
     </RootView>
