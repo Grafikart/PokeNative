@@ -3,14 +3,19 @@ import {
   Image,
   Pressable,
   StyleSheet,
-  useWindowDimensions,
   View,
 } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useFetchQuery } from "@/hooks/useFetchQuery";
 import { ThemedText } from "@/components/ThemedText";
-import React, { memo, type PropsWithChildren, useMemo, useState } from "react";
+import React, {
+  memo,
+  type PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   formatHeight,
   formatWeight,
@@ -27,22 +32,13 @@ import { AnimatePresence } from "moti";
 import { AppearFromBottom } from "@/components/animation/AppearFromBottom";
 import { Audio } from "expo-av";
 import { FadingImage } from "@/components/FadingImage";
-import { type Route, TabView } from "react-native-tab-view";
+import { type Route } from "react-native-tab-view";
+import PagerView from "react-native-pager-view";
 
 type PokemonRoute = Route & {
   id: number;
   onNext: () => void;
   onPrevious: () => void;
-};
-
-const renderScene = ({ route }: { route: PokemonRoute }) => {
-  return (
-    <PokemonView
-      id={route.id}
-      onPrevious={route.onPrevious}
-      onNext={route.onNext}
-    />
-  );
 };
 
 const lastPokemon = 151;
@@ -52,41 +48,51 @@ export default function PokemonScreen() {
   const [id, setId] = useState(
     parseInt((useLocalSearchParams() as { id: string }).id, 10),
   );
+  const pager = useRef<PagerView>(null);
+  useEffect(() => {
+    pager.current?.setPageWithoutAnimation(1);
+  }, [id]);
 
-  const routeFor = (id: number) => {
-    return {
-      key: id.toString(),
-      id: id,
-      title: id.toString(),
-      onNext: () => setIndex((i) => i + 1),
-      onPrevious: () => setIndex((i) => i - 1),
-    } satisfies PokemonRoute;
-  };
-  const layout = useWindowDimensions();
-  const [index, setIndex] = useState(1);
-  const routes = useMemo(
-    () => [routeFor(id - 1), routeFor(id), routeFor(id + 1)],
-    [id],
-  );
-  const onAnimationEnd = () => {
-    if (
-      index === 1 ||
-      (index === 0 && id === firstPokemon + 1) ||
-      (index === 2 && id === lastPokemon - 1)
-    ) {
+  const onPageSelected = (e: { nativeEvent: { position: number } }) => {
+    if (!e.nativeEvent) {
       return;
     }
-    setId(id + (index - 1));
+    const offset = e.nativeEvent.position - 1;
+    if (offset === 0) {
+      return;
+    }
+
+    setId((v) => v + offset);
   };
+
   return (
-    <TabView<PokemonRoute>
-      renderTabBar={() => null}
-      onIndexChange={setIndex}
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      initialLayout={{ width: layout.width }}
-      onSwipeEnd={onAnimationEnd}
-    />
+    <PagerView
+      ref={pager}
+      initialPage={id === 1 ? 0 : 1}
+      onPageSelected={onPageSelected}
+      style={{
+        flex: 1,
+      }}
+    >
+      <PokemonView
+        key={id - 1}
+        id={id - 1}
+        onPrevious={console.log}
+        onNext={console.log}
+      />
+      <PokemonView
+        key={id}
+        id={id}
+        onPrevious={console.log}
+        onNext={console.log}
+      />
+      <PokemonView
+        key={id + 1}
+        id={id + 1}
+        onPrevious={console.log}
+        onNext={console.log}
+      />
+    </PagerView>
   );
 }
 
@@ -167,7 +173,7 @@ const PokemonView = memo(function ({ id, onPrevious, onNext }: Props) {
           variant="headline"
           style={{ textTransform: "capitalize" }}
         >
-          {pokemon?.name}
+          {pokemon?.name} - {id}
         </ThemedText>
         {pokemon?.id && (
           <ThemedText
