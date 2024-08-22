@@ -32,14 +32,7 @@ import { AnimatePresence } from "moti";
 import { AppearFromBottom } from "@/components/animation/AppearFromBottom";
 import { Audio } from "expo-av";
 import { FadingImage } from "@/components/FadingImage";
-import { type Route } from "react-native-tab-view";
 import PagerView from "react-native-pager-view";
-
-type PokemonRoute = Route & {
-  id: number;
-  onNext: () => void;
-  onPrevious: () => void;
-};
 
 const lastPokemon = 151;
 const firstPokemon = 1;
@@ -49,6 +42,7 @@ export default function PokemonScreen() {
     parseInt((useLocalSearchParams() as { id: string }).id, 10),
   );
   const pager = useRef<PagerView>(null);
+  const offset = useRef(1);
   useEffect(() => {
     pager.current?.setPageWithoutAnimation(1);
   }, [id]);
@@ -57,12 +51,28 @@ export default function PokemonScreen() {
     if (!e.nativeEvent) {
       return;
     }
-    const offset = e.nativeEvent.position - 1;
-    if (offset === 0) {
-      return;
-    }
 
-    setId((v) => v + offset);
+    offset.current = e.nativeEvent.position - 1;
+  };
+
+  const onPageScrollStateChanged = (e: {
+    nativeEvent: { pageScrollState: string };
+  }) => {
+    if (e.nativeEvent.pageScrollState === "idle" && offset.current !== 0) {
+      setId((v) => {
+        const o = offset.current;
+        offset.current = 0;
+        return v + o;
+      });
+    }
+  };
+
+  const goPrevious = () => {
+    pager.current.setPage(0);
+  };
+
+  const goNext = () => {
+    pager.current.setPage(2);
   };
 
   return (
@@ -70,6 +80,7 @@ export default function PokemonScreen() {
       ref={pager}
       initialPage={id === 1 ? 0 : 1}
       onPageSelected={onPageSelected}
+      onPageScrollStateChanged={onPageScrollStateChanged}
       style={{
         flex: 1,
       }}
@@ -77,20 +88,15 @@ export default function PokemonScreen() {
       <PokemonView
         key={id - 1}
         id={id - 1}
-        onPrevious={console.log}
-        onNext={console.log}
+        onPrevious={goPrevious}
+        onNext={goNext}
       />
-      <PokemonView
-        key={id}
-        id={id}
-        onPrevious={console.log}
-        onNext={console.log}
-      />
+      <PokemonView key={id} id={id} onPrevious={goPrevious} onNext={goNext} />
       <PokemonView
         key={id + 1}
         id={id + 1}
-        onPrevious={console.log}
-        onNext={console.log}
+        onPrevious={goPrevious}
+        onNext={goNext}
       />
     </PagerView>
   );
@@ -173,7 +179,7 @@ const PokemonView = memo(function ({ id, onPrevious, onNext }: Props) {
           variant="headline"
           style={{ textTransform: "capitalize" }}
         >
-          {pokemon?.name} - {id}
+          {pokemon?.name}
         </ThemedText>
         {pokemon?.id && (
           <ThemedText
